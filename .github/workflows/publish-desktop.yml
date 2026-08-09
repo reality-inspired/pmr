@@ -1,0 +1,27 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false  # never use caching in release builds
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: cp LICENSE apps/pmr-desktop/LICENSE
+      - run: npm pack --dry-run --workspace=@reality-inspired/pmr-desktop
+      - run: npm publish --workspace=@reality-inspired/pmr-desktop  # Or: npm stage publish

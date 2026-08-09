@@ -3,7 +3,7 @@ name: Deploy Pages
 on:
   push:
     tags:
-      - "v*"
+      - "pages-v*"
 
   workflow_dispatch:
 
@@ -42,7 +42,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist
+          path: ./apps/pmr-web/dist
 
   deploy:
     environment:

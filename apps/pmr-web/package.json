@@ -3,6 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "author": {
+    "name": "Fluttershy",
+    "url": "https://github.com/Fluttershy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reality-inspired/pmr.git"
+  },
+  "homepage": "https://github.com/reality-inspired/pmr",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
