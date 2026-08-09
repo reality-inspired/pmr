@@ -1,9 +1,8 @@
 {
   "name": "@reality-inspired/pmr-desktop",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "description": "Poor Man's RTC: React SPA with configurable tenant and client id allowing RTC back and forth using OneDrive files of the logged in user as a simple signaling relay. App registration of the client id requires Files.ReadWrite.AppFolder permission.",
-  "type": "module",
   "author": {
     "name": "Fluttershy",
     "url": "https://github.com/Fluttershy"
@@ -31,7 +30,7 @@
     "start": "electron-vite preview",
     "dev": "node scripts/dev.mjs",
     "build": "npm run typecheck && electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
+    "DELETE_ME:postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",

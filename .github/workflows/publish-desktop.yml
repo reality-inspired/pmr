@@ -1,4 +1,4 @@
-name: Publish desktop
+name: Publish Desktop
 
 on:
   push:
