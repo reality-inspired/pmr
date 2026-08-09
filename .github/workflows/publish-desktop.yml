@@ -1,9 +1,10 @@
-name: Publish Package
+name: Publish desktop
 
 on:
   push:
     tags:
       - 'desktop-v*'
+  workflow_dispatch:
 
 permissions:
   id-token: write  # Required for OIDC
