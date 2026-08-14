@@ -30,7 +30,6 @@
     "start": "electron-vite preview",
     "dev": "node scripts/dev.mjs",
     "build": "npm run typecheck && electron-vite build",
-    "DELETE_ME:postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
@@ -39,8 +38,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@electron/get": "5.1.0",
-    "extract-zip": "2.0.1"
+    "@cmdless/ensure-electron": "0.0.3"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",

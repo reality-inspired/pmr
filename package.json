@@ -1,7 +1,6 @@
 {
   "name": "pmr",
   "private": true,
-  "type": "module",
   "workspaces": [
     "packages/*",
     "apps/*"

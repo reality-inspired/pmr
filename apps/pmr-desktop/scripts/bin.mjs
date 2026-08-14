@@ -3,13 +3,13 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureElectron } from './ensure-electron.mjs';
+import { ensureElectron } from '@cmdless/ensure-electron';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const mainPath = path.resolve(__dirname, '../out/main/index.js');
 
-const electronPath = await ensureElectron();
+const electronPath = await ensureElectron({ meta: import.meta, rebuild: true });
 const child = spawn(
   electronPath,
   [mainPath, ...process.argv.slice(2)],

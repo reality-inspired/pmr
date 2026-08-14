@@ -1,11 +1,16 @@
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
+import { type AccountInfo, type Configuration, PublicClientApplication } from '@azure/msal-browser';
+import { GraphApiHandler } from "./graphApiContext";
 
 export type AuthActions = {
   set(tenantId: string, clientId: string, accountType: AccountType): void;
-  authority(): string;
+  authority(tenantId: string, accountType: AccountType): string;
   onRedirectNavigate(url: string): boolean | void;
   blockExternalRedirect<T>(action: () => Promise<T>): Promise<T>;
+  logout(): Promise<void>;
+  setConfig(value: Configuration): void;
+  setAccount(value: AccountInfo | null): void;
 };
 
 export const AccountTypes = {
@@ -24,6 +29,10 @@ export type AuthState = {
   accountType: AccountType;
   allowExternalRedirect: boolean;
   scopes: string[];
+  config: Configuration;
+  instance: PublicClientApplication;
+  account: AccountInfo;
+  graph: GraphApiHandler;
   actions: AuthActions;
 };
 
@@ -47,6 +56,7 @@ class AuthStorage {
 
 export const useAuth = createWithEqualityFn<AuthState>()((set, get) => {
   const storage = new AuthStorage();
+  const instanceId = crypto.randomUUID();
   const actions: AuthActions = {
     set(tenantId, clientId, accountType) {
       storage.tenantId = tenantId;
@@ -58,18 +68,44 @@ export const useAuth = createWithEqualityFn<AuthState>()((set, get) => {
         accountType: storage.accountType,
       });
     },
-    authority() {
-      const { tenantId, accountType } = get();
+    authority(tenantId, accountType) {
       return `https://login.microsoftonline.com/${accountType === 'tenant' ? tenantId : accountType}`
     },
     onRedirectNavigate() {
-      console.log('onRedirectNavigate', 'allowExternalRedirect', get().allowExternalRedirect);
       return get().allowExternalRedirect;
     },
     blockExternalRedirect: async (action) => {
       set({ allowExternalRedirect: false });
       try { return await action(); }
       finally { set({ allowExternalRedirect: true }); }
+    },
+    logout() {
+      const { instance, account } = get();
+      return actions.blockExternalRedirect(() => instance.logoutRedirect({ account }));
+    },
+    setConfig(value) {
+      const { config, instance, account } = get();
+      if (config === value) return;
+      if (instance && account) {
+        actions.logout();
+        return;
+      }
+      set({ config: value, instance: new PublicClientApplication(value) });
+    },
+    setAccount(value) {
+      const { deviceId, instance, account, graph, scopes } = get()
+      if (account === value) return;
+      if (graph) graph.dispose();
+      if (value) {
+        const handler = new GraphApiHandler({ deviceId, instanceId }, async () => {
+          const result = await instance.acquireTokenSilent({ account: value, scopes });
+          return result.accessToken;
+        });
+        handler.run();
+        set({ account: value, graph: handler });
+      } else {
+        set({ account: null!, graph: null! });
+      }
     },
   };
   return {
@@ -79,6 +115,10 @@ export const useAuth = createWithEqualityFn<AuthState>()((set, get) => {
     accountType: storage.accountType,
     allowExternalRedirect: true,
     scopes: ['Files.ReadWrite.AppFolder'],
+    config: null!,
+    instance: null!,
+    account: null!,
+    graph: null!,
     actions,
   };
 }, shallow);

@@ -1,16 +1,10 @@
-import React from 'react';
 import { AppShell, Button, Divider, Menu } from '@mantine/core';
 import { useMsal } from '@azure/msal-react';
 import { useAuth } from './auth/authState';
 
 function App() {
-  const { instance, inProgress } = useMsal();
-  const { blockExternalRedirect } = useAuth(s => s.actions);
-  const account = instance.getActiveAccount()!;
-
-  const logout = React.useCallback(async () => {
-    await blockExternalRedirect(() => instance.logoutRedirect({ account }));
-  }, [instance, account, blockExternalRedirect]);
+  const { inProgress } = useMsal();
+  const { account, actions: { logout } } = useAuth();
 
   return (
     <AppShell navbar={{ width: 250, breakpoint: 'xs' }}>
